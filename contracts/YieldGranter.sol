@@ -29,17 +29,15 @@ contract YieldGranter is YieldGranterVaultBase {
     }
 
     function depositProxy(uint256 amountA, uint256 amountB) external {
-        console.log("start of deposit function");
-        console.log("token1 before deposit", token1.balanceOf(address(this)));
-        console.log("token2 before deposit", token2.balanceOf(address(this)));
         token1.transferFrom(msg.sender, address(this), amountA);
         token2.transferFrom(msg.sender, address(this), amountB);
-        console.log("token1 after deposit", token1.balanceOf(address(this)));
-        console.log("token2 after deposit", token2.balanceOf(address(this)));
         uint256 lpTokenAmount = addLiquidity(amountA, amountB);
-        console.log("lpTokenAmount after adding liquidity", lpTokenAmount);
         uint256 shares = super.deposit(lpTokenAmount, address(this));
-        console.log("shares after deposit ERC4626", lpTokenAmount);
+    }
+
+    function withdrawProxy(uint256 amount) external {
+        uint lpTokenAmount = super.withdraw(amount, address(this));
+        removeLiquidity(lpTokenAmount);
     }
 
     function addLiquidity(uint256 amountA, uint256 amountB) private returns (uint256) {
@@ -58,6 +56,23 @@ contract YieldGranter is YieldGranterVaultBase {
             getDeadline()
         );
         return lpToken.balanceOf(address(this));
+    }
+
+    function removeLiquidity(
+        uint256 lpTokenAmount,
+        uint256 amountAMin,
+        uint256 amountBMin
+    ) private returns (uint256 amountA, uint256 amountB) {
+        (amountA, amountB) = router.removeLiquidity(
+            address(token1),
+            address(token2),
+            true,
+            lpTokenAmount,
+            amountAMin,
+            amountBMin,
+            msg.sender,
+            getDeadline()
+        );
     }
 
     function updateDeadline() public {

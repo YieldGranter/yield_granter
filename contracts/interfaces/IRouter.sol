@@ -14,16 +14,6 @@ interface IRouter {
         uint deadline
     ) external returns (uint amountA, uint amountB, uint liquidity);
 
-    function addEthLiquidity(
-        address token,
-        bool stable,
-        uint amountTokenDesired,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline
-    ) external returns (uint amountToken, uint amountETH, uint liquidity);
-
     function removeLiquidity(
         address tokenA,
         address tokenB,
@@ -34,14 +24,4 @@ interface IRouter {
         address to,
         uint deadline
     ) external returns (uint amountA, uint amountB);
-
-    function removeEthLiquidity(
-        address token,
-        bool stable,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline
-    ) external returns (uint amountToken, uint amountETH);
 }

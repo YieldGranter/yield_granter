@@ -89,96 +89,78 @@ abstract contract YieldGranterVaultBase is ERC20, IERC4626 {
         return _convertToAssets(shares, Math.Rounding.Down);
     }
 
-    function deposit(uint256 assets, address caller) public virtual override returns (uint256) {
-        require(assets <= maxDeposit(caller), "ERC4626: deposit more than max");
+    function deposit(uint256 assets, address owner) public virtual override returns (uint256) {
+        require(assets <= maxDeposit(owner), "ERC4626: deposit more than max");
 
         uint256 shares = previewDeposit(assets);
-        _deposit(_msgSender(), caller, assets, shares);
+        _deposit(owner, assets, shares);
 
         return shares;
     }
 
-    function mint(uint shares, address receiver) public virtual returns (uint) {
+    function mint(uint shares, address caller) public virtual returns (uint) {
         require(shares <= maxMint(receiver));
 
         uint assets = previewMint(shares);
 
-        _deposit(msg.sender, receiver, assets, shares);
+        _deposit(caller, assets, shares);
 
         return assets;
     }
 
     function withdraw(
         uint assets,
-        address receiver,
         address owner
     ) public virtual returns (uint) {
         require(assets <= maxWithdraw(owner));
 
         uint shares = previewWithdraw(assets);
 
-        _withdraw(msg.sender, receiver, owner, assets, shares);
+        _withdraw(owner, assets, shares);
 
         return assets;
     }
 
     function redeem(
         uint shares,
-        address receiver,
+        address caller,
         address owner
     ) public virtual returns (uint) {
         require(shares <= maxRedeem(owner));
 
         uint assets = previewRedeem(shares);
 
-        _withdraw(msg.sender, receiver, owner, assets, shares);
+        _withdraw(owner, assets, shares);
 
         return assets;
     }
 
     function _deposit(
-        address caller,
-        address receiver,
-        uint assets,
-        uint shares
-    ) internal virtual {
-        console.log("deposit 1");
-        console.log("msgSender", msg.sender);
-        console.log("_asset address", address(_asset));
-        console.log("balance of", _asset.balanceOf(msg.sender));
-        console.log("assets is ", assets);
-        _asset.transferFrom(caller, address(this), assets);
-        console.log("deposit 2");
-
-        _mint(receiver, shares);
-        console.log("deposit 3");
-
-        _asset.approve(address(gauge), assets);
-        console.log("deposit 4");
-        gauge.deposit(assets, 0);
-        console.log("deposit 5");
-        console.log("balance caller after minting", balanceOf(caller));
-
-        emit Deposit(caller, receiver, assets, shares);
-        console.log("deposit 6");
-    }
-
-    function _withdraw(
-        address caller,
-        address receiver,
         address owner,
         uint assets,
         uint shares
     ) internal virtual {
-        if (caller != owner) {
-            _spendAllowance(owner, caller, shares);
-        }
+        _asset.transferFrom(owner, address(this), assets);
 
+        _mint(owner, shares);
+
+        _asset.approve(address(gauge), assets);
+        gauge.deposit(assets, 0);
+
+        emit Deposit(_msgSender(), owner, assets, shares);
+    }
+
+    function _withdraw(
+        address owner,
+        uint assets,
+        uint shares
+    ) internal virtual {
         _burn(owner, shares);
+        gauge.withdrawToken(assets, 0);
 
-        _asset.transfer(receiver, assets);
+        _asset.transfer(owner, assets);
 
-        emit Withdraw(caller, receiver, owner, assets, shares);
+        emit Withdraw(_msgSender(), owner, owner, assets, shares);
     }
 
     function _convertToShares(
