@@ -8,13 +8,24 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 import "hardhat/console.sol";
 import "../interfaces/IGauge.sol";
 
-abstract contract YieldGranterVaultBase is ERC20, IERC4626 {
+abstract contract YieldGranterVaultBase is ERC20 {
     using Math for uint256;
 
     IGauge private gauge;
 
     IERC20 private immutable _asset;
     uint8 private immutable _underlyingDecimals;
+
+    // events
+    event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares);
+
+    event Withdraw(
+        address indexed sender,
+        address indexed receiver,
+        address indexed owner,
+        uint256 assets,
+        uint256 shares
+    );
 
     constructor(
         address asset_,
@@ -66,6 +77,7 @@ abstract contract YieldGranterVaultBase is ERC20, IERC4626 {
     }
 
     function maxWithdraw(address owner) public view virtual returns (uint) {
+        console.log("balance of is ", balanceOf(owner));
         return _convertToAssets(balanceOf(owner), Math.Rounding.Down);
     }
 
@@ -89,21 +101,23 @@ abstract contract YieldGranterVaultBase is ERC20, IERC4626 {
         return _convertToAssets(shares, Math.Rounding.Down);
     }
 
-    function deposit(uint256 assets, address owner) public virtual override returns (uint256) {
+    function deposit(uint256 assets, address owner) public virtual returns (uint256) {
         require(assets <= maxDeposit(owner), "ERC4626: deposit more than max");
 
+        console.log("deposit assets are", assets);
         uint256 shares = previewDeposit(assets);
+        console.log("deposit shares are", shares);
         _deposit(owner, assets, shares);
 
         return shares;
     }
 
-    function mint(uint shares, address caller) public virtual returns (uint) {
-        require(shares <= maxMint(receiver));
+    function mint(uint shares, address owner) public virtual returns (uint) {
+        require(shares <= maxMint(owner));
 
         uint assets = previewMint(shares);
 
-        _deposit(caller, assets, shares);
+        _deposit(owner, assets, shares);
 
         return assets;
     }
@@ -114,7 +128,9 @@ abstract contract YieldGranterVaultBase is ERC20, IERC4626 {
     ) public virtual returns (uint) {
         require(assets <= maxWithdraw(owner));
 
+        console.log("before shares");
         uint shares = previewWithdraw(assets);
+        console.log("after shares", shares);
 
         _withdraw(owner, assets, shares);
 
@@ -155,10 +171,14 @@ abstract contract YieldGranterVaultBase is ERC20, IERC4626 {
         uint assets,
         uint shares
     ) internal virtual {
+        console.log("before _burn and shares is ", shares);
         _burn(owner, shares);
+        console.log("after _burn");
         gauge.withdrawToken(assets, 0);
+        console.log("after withdrawToken gauge");
 
         _asset.transfer(owner, assets);
+        console.log("after _asset transfer");
 
         emit Withdraw(_msgSender(), owner, owner, assets, shares);
     }
@@ -167,6 +187,9 @@ abstract contract YieldGranterVaultBase is ERC20, IERC4626 {
         uint assets,
         Math.Rounding rounding
     ) internal view virtual returns (uint) {
+        console.log("convert assets are", assets);
+        console.log("convert totalSupply are", totalSupply() + 10 ** _decimalOffset());
+        console.log("convert totalAssets are", totalAssets() + 1);
         return assets.mulDiv(
             totalSupply() + 10 ** _decimalOffset(),
             totalAssets() + 1,

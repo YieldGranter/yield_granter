@@ -35,9 +35,9 @@ contract YieldGranter is YieldGranterVaultBase {
         uint256 shares = super.deposit(lpTokenAmount, address(this));
     }
 
-    function withdrawProxy(uint256 amount) external {
+    function withdrawProxy(uint256 amount, uint256 amountAMin, uint256 amountBMin) external {
         uint lpTokenAmount = super.withdraw(amount, address(this));
-        removeLiquidity(lpTokenAmount);
+        removeLiquidity(lpTokenAmount, amountAMin, amountBMin);
     }
 
     function addLiquidity(uint256 amountA, uint256 amountB) private returns (uint256) {
