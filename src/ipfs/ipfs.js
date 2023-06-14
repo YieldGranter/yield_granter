@@ -58,7 +58,7 @@ class Ipfs {
     }
 
     async getAllProjects() {
-        const cids = this.ipfsStorageContract.cids
+        const cids = await this.ipfsStorageContract.cids
         let projects = []
         for (const cid of cids) {
             const project = await this.getProject(cid)
