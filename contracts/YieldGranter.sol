@@ -13,6 +13,8 @@ contract YieldGranter is YieldGranterVaultBase {
 
     uint256 private deadline;
 
+    mapping (address => uint256) public donatedAmount;
+
     constructor(
         address _gauge,
         address _router,
@@ -81,5 +83,9 @@ contract YieldGranter is YieldGranterVaultBase {
 
     function getDeadline() private view returns (uint256) {
         return deadline;
+    }
+
+    function getDonatedAmount(address project) public view returns (uint256) {
+        return donatedAmount[project];
     }
 }
