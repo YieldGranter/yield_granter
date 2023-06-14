@@ -27,6 +27,10 @@
     "send": "hardhat send",
     "generate": "hardhat generate",
     "account": "hardhat account",
-    "verify": "hardhat verify"
+    "verify": "hardhat verify",
+    "deploy": "yarn hardhat deploy"
+  },
+  "dependencies": {
+    "ipfs-http-client": "^60.0.1"
   }
 }
