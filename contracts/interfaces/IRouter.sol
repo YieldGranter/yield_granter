@@ -2,6 +2,13 @@
 pragma solidity ^0.8.0;
 
 interface IRouter {
+
+    function getReserves(
+        address tokenA,
+        address tokenB,
+        bool stable
+    ) external view returns (uint reserveA, uint reserveB);
+
     function addLiquidity(
         address tokenA,
         address tokenB,
