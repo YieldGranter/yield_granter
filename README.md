@@ -1,7 +1,9 @@
 # yield_granter
 <img width="935" height="450" alt="Screen Shot 2023-06-18 at 16 35 44" src="https://github.com/YieldGranter/yield_granter/assets/61376884/3c5a9704-da24-4978-97e8-1595dec05eb8">
 
-Front: https://github.com/YieldGranter/yield_granter_front
+#
+Front repo: https://github.com/YieldGranter/yield_granter_front
+#
 
 ## Description
 YieldGranter is an innovative donation platform that allows users to donate a portion of their farming yield on a regular basis. Our app stores project's information on the IPFS, which means project can apply for donation in a decentralized manner without any centralized approval. In the future, we plan to integrate with rating protocols to solve the problem of spam projects.
