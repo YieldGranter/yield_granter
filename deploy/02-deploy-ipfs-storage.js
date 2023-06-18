@@ -2,7 +2,7 @@ const {ethers, network} = require("hardhat");
 const {networkConfig, developmentChains} = require("../helper-hardhat-config");
 
 module.exports = async function ({getNamedAccounts, deployments}) {
-    if (developmentChains.includes(network.name)) {
+    // if (developmentChains.includes(network.name)) {
         const {deploy, log} = deployments
         const {deployer} = await getNamedAccounts()
         console.log(deployer)
@@ -20,7 +20,7 @@ module.exports = async function ({getNamedAccounts, deployments}) {
             log("Verifying")
         }
         log("--------------")
-    }
+    // }
 }
 
 module.exports.tags = ["all", "ipfs-storage"]

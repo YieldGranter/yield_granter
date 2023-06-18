@@ -10,11 +10,11 @@ require("dotenv").config()
 
 const OPTIMISM_RPC_URL =
     process.env.OPTIMISM_RPC_URL ||
-    "https://endpoints.omniatech.io/v1/op/mainnet/public"
+    "https://optimism.publicnode.com"
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x"
 
 module.exports = {
-    defaultNetwork: "hardhat",
+    defaultNetwork: "optimism",
     networks: {
         hardhat: {
             chainId: 31337,
