@@ -12,7 +12,7 @@ module.exports = async function ({getNamedAccounts, deployments}) {
             networkConfig[network.config.chainId].gauge,
             networkConfig[network.config.chainId].router,
             networkConfig[network.config.chainId].usdc,
-            networkConfig[network.config.chainId].susd,
+            networkConfig[network.config.chainId].dola,
             networkConfig[network.config.chainId].lpToken,
             networkConfig[network.config.chainId].velo,
         ]
@@ -25,7 +25,7 @@ module.exports = async function ({getNamedAccounts, deployments}) {
 
         const deployerSigner = await ethers.getSigner(deployer)
         const token1Contract = new ethers.Contract(networkConfig[network.config.chainId].usdc, ERC20_ABI, deployerSigner);
-        const token2Contract = new ethers.Contract(networkConfig[network.config.chainId].susd, ERC20_ABI, deployerSigner);
+        const token2Contract = new ethers.Contract(networkConfig[network.config.chainId].dola, ERC20_ABI, deployerSigner);
 
         await token1Contract.approve(proxyContract.address, ethers.utils.parseUnits("100", "ether"));
         await token2Contract.approve(proxyContract.address, ethers.utils.parseUnits("100", "ether"));

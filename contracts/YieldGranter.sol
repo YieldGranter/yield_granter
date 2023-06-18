@@ -139,7 +139,7 @@ contract YieldGranter is YieldGranterVaultBase, ReentrancyGuard {
         token1.approve(address(router), amountA * 2);
         token2.approve(address(router), amountB * 2);
         _updateDeadline();
-        router.addLiquidity(
+        (uint256 a, uint256 b, uint256 liquidity) = router.addLiquidity(
             address(token1),
             address(token2),
             true,
@@ -150,7 +150,7 @@ contract YieldGranter is YieldGranterVaultBase, ReentrancyGuard {
             address(this),
             _getDeadline()
         );
-        return lpToken.balanceOf(address(this));
+        return liquidity;
     }
 
     function _removeLiquidity(
