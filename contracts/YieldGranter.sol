@@ -68,8 +68,6 @@ contract YieldGranter is YieldGranterVaultBase, ReentrancyGuard {
         }
         donations[msg.sender] = toProject;
 
-        token1.approve(msg.sender, amountA * 2);
-        token2.approve(msg.sender, amountB * 2);
         token1.transferFrom(msg.sender, address(this), amountA);
         token2.transferFrom(msg.sender, address(this), amountB);
 
